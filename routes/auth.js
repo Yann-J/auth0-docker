@@ -16,6 +16,16 @@ router.get('/callback', function (req, res, next) {
     if (!user) { return res.redirect(process.env.LOGIN_URL || '/login'); }
     req.logIn(user, function (err) {
       if (err) { return next(err); }
+
+      // Save JWT to cookie
+      // See https://github.com/auth0/passport-auth0/issues/25 for details
+      info && info.jwt_token && res.cookie(process.env.COOKIE_NAME || 'jwt_token', info.jwt_token, {
+        maxAge: 86400000,   // in ms
+        httpOnly: true,
+        // secure: true,
+        secure: false,
+      });
+
       const returnTo = req.session.returnTo;
       delete req.session.returnTo;
       res.redirect(returnTo || process.env.RETURN_URL || '/user');
