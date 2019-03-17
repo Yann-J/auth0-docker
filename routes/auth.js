@@ -19,8 +19,10 @@ router.get('/callback', function (req, res, next) {
 
       // Save JWT to cookie
       // See https://github.com/auth0/passport-auth0/issues/25 for details
+      console.log(`Got user token for user:`);
+      console.dir(user);
       info && info.jwt_token && res.cookie(process.env.COOKIE_NAME || 'jwt_token', info.jwt_token, {
-        maxAge: 86400000,   // in ms
+        maxAge: process.env.EXPIRATION || 86400000,   // in ms
         httpOnly: true,
         secure: true,
         // secure: false,
