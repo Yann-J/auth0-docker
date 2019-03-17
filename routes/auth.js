@@ -22,8 +22,8 @@ router.get('/callback', function (req, res, next) {
       info && info.jwt_token && res.cookie(process.env.COOKIE_NAME || 'jwt_token', info.jwt_token, {
         maxAge: 86400000,   // in ms
         httpOnly: true,
-        // secure: true,
-        secure: false,
+        secure: true,
+        // secure: false,
       });
 
       const returnTo = req.session.returnTo;
