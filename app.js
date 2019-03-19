@@ -20,8 +20,7 @@ var strategy = new Auth0Strategy(
     domain: process.env.AUTH0_DOMAIN,
     clientID: process.env.AUTH0_CLIENT_ID,
     clientSecret: process.env.AUTH0_CLIENT_SECRET,
-    callbackURL:
-      process.env.AUTH0_CALLBACK_URL || 'http://localhost:3000/callback'
+    callbackURL:  process.env.AUTH0_CALLBACK_URL || `http://localhost:3000${process.env.URL_CONTEXT || ''}/callback`
   },
   function (accessToken, refreshToken, extraParams, profile, done) {
     // accessToken is the token to call Auth0 API (not needed in the most cases)
@@ -53,7 +52,7 @@ app.use(cookieParser());
 
 // config express-session
 var sess = {
-  secret: 'CHANGE THIS SECRET',
+  secret: process.env.SESSION_SECRET || 'CHANGE THIS SECRET',
   cookie: {},
   resave: false,
   saveUninitialized: true
@@ -118,4 +117,12 @@ app.use(function (err, req, res, next) {
   });
 });
 
-module.exports = app;
+app.locals.basePath = process.env.URL_CONTEXT || '';
+let export_app = app;
+
+if(app.locals.basePath) {
+  //mount on subpath
+  export_app = express().use(app.locals.basePath, app);
+}
+
+module.exports = export_app;

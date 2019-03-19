@@ -3,10 +3,19 @@ var router = express.Router();
 var passport = require('passport');
 
 // Perform the login, after login Auth0 will redirect to callback
-router.get('/login', passport.authenticate('auth0', {
-  scope: 'openid email profile'
-}), function (req, res) {
-  res.redirect('/');
+router.get('/login', 
+  (req,res,next) => {
+    // Save the referrer URL to redirect back after authentication...
+    if(!req.session.returnTo && req.headers.referer && req.headers.referer != req.originalUrl) {
+      req.session.returnTo = req.headers.referer;
+    }
+    next();
+  },
+  passport.authenticate('auth0', {
+    scope: 'openid email profile'
+  }),
+  function (req, res) {
+    res.redirect('/');
 });
 
 // Perform the final stage of authentication and redirect to previously requested URL or '/user'
