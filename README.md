@@ -1,60 +1,33 @@
-# 01-Login
+# Auth0 JWT Proxy
 
-## Running the Sample
+This simple app implements several useful HTTP endpoints needed in the Oauth2/JWT authentication flow.
 
-Install the dependencies.
+- `/login`: will simply redirect to the appropriate Auth0 login page with all application-specific parameters (and save the Referer in a session cookie to redirect back to it after the completion of the authentication flow).
+- `/callback`: the most important endpoint, in charge of validating the token passed by Auth0 to the browser by HTTP redirect, against the Auth0 servers, to retrieve a JWT token and save it in a cookie under your domain.
+It also includes a basic UI to show your current login status, and the contents of your decoded JWT at `/user`.
 
-```bash
-npm install
+It uses nodejs, passport, and the official Auth0 passport strategy.
+
+## To run and use
+
+Just run the docker image with the right environment variables:
+```
+docker run auth0-docker -e NAME:VALUE -e NAME2:VALUE2 ...
 ```
 
-Rename `.env.example` to `.env` and replace the values for `AUTH0_CLIENT_ID`, `AUTH0_DOMAIN`, and `AUTH0_CLIENT_SECRET` with your Auth0 credentials. If you don't yet have an Auth0 account, [sign up](https://auth0.com/signup) for free.
+It will serve the application at [http://localhost:3000/](http://localhost:3000/).
 
-```bash
-# copy configuration and replace with your own
-cp .env.example .env
-```
+The following variables may be used:
 
-Run the app.
+| Variable name | Required? | Purpose | Example |
+|---|---|---|---|
+|`AUTH0_CLIENT_ID`| Yes | Your Auth0 Client ID, from your application settings in Auth0 portal | `ypI8mltZkbAzb854T4RnzhjK8idFu2Y4` |
+|`AUTH0_DOMAIN` | Yes | Your Auth0 domain | `mydomain.eu.auth0.com` |
+|`AUTH0_CLIENT_SECRET` | Yes | Your client secret, used to validate the JWT token | `c-aZ9-dAmNzjT7c0D7yfxwZ4vo8n2e2te9_qEF5yX-XoSHjRcY64DgWLbPF8dkq3` |
+|`RETURN_URL` | No | The default URL to redirect back to after login, defaults to '/' | `/` |
+|`SESSION_SECRET` | No | A random key used to encrypt the session cookie used to remember the original Referer | `wd#R%g45g` |
+|`URL_CONTEXT` | No | A base URL under which to serve all the endpoints. Useful for reverse proxy setup. Defaults to root '/' | `/auth` |
+|`COOKIE_NAME` | No | The name of the cookie to be used to save the JWT |
 
-```bash
-npm start
-```
+The server is intended to be run behind a proxy in order to be served inder the same domain as your application so it can share the cookie.
 
-The app will be served at `localhost:3000`.
-
-## Running the Sample With Docker
-
-In order to run the example with docker you need to have `docker` installed.
-
-You also need to set the environment variables as explained [previously](#running-the-sample).
-
-Execute in command line `sh exec.sh` to run the Docker in Linux, or `.\exec.ps1` to run the Docker in Windows.
-
-## What is Auth0?
-
-Auth0 helps you to:
-
-* Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders), either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, amont others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
-* Add authentication through more traditional **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
-* Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
-* Support for generating signed [Json Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
-* Analytics of how, when and where users are logging in.
-* Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
-
-## Create a free account in Auth0
-
-1. Go to [Auth0](https://auth0.com) and click Sign Up.
-2. Use Google, GitHub or Microsoft Account to login.
-
-## Issue Reporting
-
-If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
-
-## Author
-
-[Auth0](https://auth0.com)
-
-## License
-
-This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more info.
