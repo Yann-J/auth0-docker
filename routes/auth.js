@@ -30,12 +30,16 @@ router.get('/callback', function (req, res, next) {
       // See https://github.com/auth0/passport-auth0/issues/25 for details
       console.log(`Got user token for user:`);
       console.dir(user);
-      info && info.jwt_token && res.cookie(process.env.COOKIE_NAME || 'jwt_token', info.jwt_token, {
+      let cookieOpts = {
         maxAge: process.env.EXPIRATION || 86400000,   // in ms
         httpOnly: true,
         secure: true,
         // secure: false,
-      });
+      };
+      if(process.env.COOKIE_DOMAIN) {
+        cookieOpts.domain = process.env.COOKIE_DOMAIN == '.' ? '.'+req.host : process.env.COOKIE_DOMAIN;
+      }
+      info && info.jwt_token && res.cookie(process.env.COOKIE_NAME || 'jwt_token', info.jwt_token, cookieOpts);
 
       const returnTo = req.session.returnTo;
       delete req.session.returnTo;
