@@ -6,9 +6,7 @@ var passport = require('passport');
 router.get('/login', 
   (req,res,next) => {
     // Save the referrer URL to redirect back after authentication...
-    if(!req.session.returnTo && req.headers.referer && req.headers.referer != req.originalUrl) {
-      req.session.returnTo = req.headers.referer;
-    }
+    req.session.returnTo = req.query.returnTo;
     next();
   },
   passport.authenticate('auth0', {
@@ -51,7 +49,7 @@ router.get('/callback', function (req, res, next) {
 // Perform session logout and redirect to homepage
 router.get('/logout', (req, res) => {
   req.logout();
-  res.redirect('/');
+  res.redirect(process.env.LOGOUT_URL || '/');
 });
 
 module.exports = router;
