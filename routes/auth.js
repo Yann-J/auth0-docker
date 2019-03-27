@@ -2,6 +2,12 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 
+const cookieOpts = {
+  maxAge: process.env.EXPIRATION || 86400000,   // in ms
+  httpOnly: true,
+  secure: true,
+};
+
 // Perform the login, after login Auth0 will redirect to callback
 router.get('/login', 
   (req,res,next) => {
@@ -28,14 +34,9 @@ router.get('/callback', function (req, res, next) {
       // See https://github.com/auth0/passport-auth0/issues/25 for details
       console.log(`Got user token for user:`);
       console.dir(user);
-      let cookieOpts = {
-        maxAge: process.env.EXPIRATION || 86400000,   // in ms
-        httpOnly: true,
-        secure: true,
-        // secure: false,
-      };
+
       if(process.env.COOKIE_DOMAIN) {
-        cookieOpts.domain = process.env.COOKIE_DOMAIN == '.' ? '.'+req.host : process.env.COOKIE_DOMAIN;
+        cookieOpts.domain = process.env.COOKIE_DOMAIN == '.' ? '.'+req.hostname : process.env.COOKIE_DOMAIN;
       }
       info && info.jwt_token && res.cookie(process.env.COOKIE_NAME || 'jwt_token', info.jwt_token, cookieOpts);
 
@@ -49,6 +50,7 @@ router.get('/callback', function (req, res, next) {
 // Perform session logout and redirect to homepage
 router.get('/logout', (req, res) => {
   req.logout();
+  res.clearCookie(process.env.COOKIE_NAME || 'jwt_token', cookieOpts);
   res.redirect(process.env.LOGOUT_URL || '/');
 });
 
