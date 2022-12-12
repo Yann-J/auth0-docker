@@ -12,7 +12,7 @@ It uses nodejs, passport, and the official Auth0 passport strategy.
 
 Just run the docker image with the right environment variables:
 ```
-docker run auth0-docker -e NAME:VALUE -e NAME2:VALUE2 ...
+docker run --name auth0-docker -e NAME=VALUE -e NAME2=VALUE2 ... yannj/auth0-docker
 ```
 
 It will serve the application at [http://localhost:3000/](http://localhost:3000/).
@@ -24,6 +24,7 @@ The following variables may be used:
 |`AUTH0_CLIENT_ID`| Yes | Your Auth0 Client ID, from your application settings in Auth0 portal | `ypI8mltZkbAzb854T4RnzhjK8idFu2Y4` |
 |`AUTH0_DOMAIN` | Yes | Your Auth0 domain | `mydomain.eu.auth0.com` |
 |`AUTH0_CLIENT_SECRET` | Yes | Your client secret, used to validate the JWT token | `c-aZ9-dAmNzjT7c0D7yfxwZ4vo8n2e2te9_qEF5yX-XoSHjRcY64DgWLbPF8dkq3` |
+|`AUTH0_CALLBACK_URL` | No | The default callback URL, defaults to '/callback' | `/` |
 |`RETURN_URL` | No | The default URL to redirect back to after login, defaults to '/' | `/` |
 |`SESSION_SECRET` | No | A random key used to encrypt the session cookie used to remember the original Referer | `wd#R%g45g` |
 |`URL_CONTEXT` | No | A base URL under which to serve all the endpoints. Useful for reverse proxy setup. Defaults to root '/' | `/auth` |
